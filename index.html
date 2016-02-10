@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Animated Vehicles</title>
+</head>
+<body id="animated">
+  <main>
+  <h1>Animated Vehicles</h1>
+    <h3>What it does:</h3>
+    <ul>
+      <li>Adds actions to:</li>
+      <li>Fold and unfold MV22, AH1Z and UH1Y only when the engine is off. Turning the engine on will automatically unfold. Also includes open ramp and close ramp on MV22.</li>
+      <li>Close and open hatch on armored SUV. The hatch can not be closed while the gunner seat is occupied. You can not switch to gunner while the hatch is closed.</li>
+    </ul>
+    <h2>Install Steps:</h2>
+    <ol>
+      <li>If you do not have a custom compiles.sqf:
+        <input class="spoilerbutton" type="button" value="Show" onclick="this.value=this.value=='Show'?'Hide':'Show';" />
+        <div class="spoiler"><div>
+          <ul>
+            <li>In init.sqf find this:<br />
+              <code>call compile preprocessFileLineNumbers "\z\addons\dayz_code\init\compiles.sqf";</code>
+            </li>
+            <li>Add directly below it:<br />
+              <code>call compile preprocessFileLineNumbers "custom\compiles.sqf";</code>
+            </li>
+            <li>Create a new file in the mission\custom\ folder, name it compiles.sqf and put this inside:<br />
+<pre><code>if (!isDedicated) then {
+  fnc_usec_selfActions = compile preprocessFileLineNumbers "custom\fn_selfActions.sqf";
+  ah1z_pack = compile preprocessFileLineNumbers "\ca\air\Scripts\AH1Z_fold.sqf";
+  mv22_pack = compile preprocessFileLineNumbers "\ca\air2\MV22\scripts\pack.sqf";
+  uh1y_pack = compile preprocessFileLineNumbers "\ca\air2\UH1Y\Scripts\fold.sqf";
+};</code></pre>
+            </li>
+          </ul>
+        </div></div>
+      </li>
+      <li>If you do not have a custom variables.sqf:
+        <input class="spoilerbutton" type="button" value="Show" onclick="this.value=this.value=='Show'?'Hide':'Show';" />
+        <div class="spoiler"><div>
+          <ul>
+            <li>In init.sqf find this:<br />
+              <code>call compile preprocessFileLineNumbers "\z\addons\dayz_code\init\variables.sqf";</code>
+            </li>
+            <li>Add directly below it:<br />
+              <code>call compile preprocessFileLineNumbers "custom\variables.sqf";</code>
+            </li>
+            <li>Now create a new blank file in your mission\custom\ folder and name it variables.sqf.</li>
+          </ul>
+        </div></div>
+      </li>
+      <li>In @DayZYourMod\addons\dayz_code\init\variables.sqf find this:
+<pre><code>dayz_resetSelfActions = {
+  s_player_equip_carry = -1;
+  s_player_dragbody = -1;
+  s_player_fire = -1;
+  ...
+  s_player_upgradestroage = -1;
+  s_player_lockUnlock_crtl = -1;
+};
+call dayz_resetSelfActions;
+</code></pre>
+        Copy all of the above to the very bottom of your custom variables.sqf. Add these six lines directly below the last action, which is usually:<br />
+        <code>s_player_upgradestroage = -1;</code> or <code>s_player_lockUnlock_crtl = -1;</code>
+<pre><code>  ah1z_fold = -1;
+  ah1z_unfold = -1;
+  mv22_fold = -1;
+  mv22_unfold = -1;
+  mv22_open = -1;
+  mv22_close = -1;
+  suv_close = -1;
+  suv_open = -1;
+  uh1y_fold = -1;
+  uh1y_unfold = -1;
+</code></pre>
+      </li>
+      <li>If you do not have a custom fn_selfActions.sqf:
+        <input class="spoilerbutton" type="button" value="Show" onclick="this.value=this.value=='Show'?'Hide':'Show';" />
+        <div class="spoiler"><div>
+          <ul>
+            <li>Copy fn_selfActions.sqf from @DayZYourMod\addons\dayz_code\compile\ to the mission \custom\ folder</li>
+            <li>In compiles.sqf add this in the if (!isDedicated) section:<br />
+              <code>fnc_usec_selfActions = compile preprocessFileLineNumbers "custom\fn_selfActions.sqf";</code>
+            </li>
+            <li><strong>Note:</strong> If you already have the fnc_usec_selfActions line replace it instead.</li>
+          </ul>
+        </div></div>
+      </li>
+      <li>Add this to your compiles.sqf in the if (!isDedicated) section:<br />
+<pre><code>  ah1z_pack = compile preprocessFileLineNumbers "\ca\air\Scripts\AH1Z_fold.sqf";
+  mv22_pack = compile preprocessFileLineNumbers "\ca\air2\MV22\scripts\pack.sqf";
+  uh1y_pack = compile preprocessFileLineNumbers "\ca\air2\UH1Y\Scripts\fold.sqf";
+</code></pre>
+        <strong>Note:</strong> If you already have those lines replace them instead.
+      </li>
+      <li>In fn_selfActions.sqf find this:
+<pre><code>} else {
+  player removeAction s_player_grabflare;
+  player removeAction s_player_removeflare;
+  s_player_grabflare = -1;
+  s_player_removeflare = -1;
+};
+</code></pre>
+        Below that add this:
+        <code>#include "animatedVehicles.sqf"</code><br />
+        Now put animatedVehicles.sqf in the same folder with fn_selfActions.sqf.
+      </li>
+      <li>Put the scripts\animate\ folder in your mission root.</li>
+      <li>If using antihax and addActions check is enabled:<br />
+        <input class="spoilerbutton" type="button" value="Show" onclick="this.value=this.value=='Show'?'Hide':'Show';" />
+        <div class="spoiler"><div>
+        In AHConfig.sqf find:
+<pre><code>/*  ALLOWED Actions  */
+_dayzActions =
+[
+  "DonorSkins","wardrobe","s_player_maintain_area", ...
+</code></pre>
+        Add to the list:<br />
+<pre><code>ah1z_fold,ah1z_unfold,mv22_fold,mv22_unfold,mv22_open,mv22_close,suv_close,suv_open,uh1y_fold,uh1y_unfold</code></pre>
+        </div></div>
+      </li>
+    </ol>
+    <figure><img src="mv22.jpg" alt="MV22 Folded" width="895" height="681" /></figure>
+    <figure><img src="suv.jpg" alt="Armored SUV Closed" width="895" height="681" /></figure>
+    <figure><img src="ah1z.jpg" alt="AH1Z Folded" width="895" height="681" /></figure>
+    <br />
+    <h2>Credits:</h2>
+    <ul>
+      <li><a href="http://opendayz.net/members/kind-sir.1869/">Kind-Sir</a> - info on how to open and close ramp</li>
+      <li><a href="http://www.armaholic.com/forums.php?m=posts&amp;q=22209">Noxious</a> - info on how to fold Osprey</li>
+      <li><a href="http://www.armaholic.com/page.php?id=18702">Marker</a> - example script for armored SUV</li>
+      <li><a href="http://opendayz.net/members/player2.5572/">Player2 </a>- informing me of isEngineOn command :D</li>
+      <li>(AOW)Recon - pointing out where the uh1y pack was located</li>
+    </ul>
+    <a href="https://github.com/ebaydayz/Animated-Vehicles/archive/master.zip"><h2>&gt;&gt;&gt; Download Link &lt;&lt;&lt;</h2></a>
+    <a href="https://github.com/ebaydayz/Animated-Vehicles"><h2>&gt;&gt;&gt; GitHub Link &lt;&lt;&lt;</h2></a>
+    <p>(pull requests and issues are always welcome)</p>
+    <a href="http://opendayz.net/threads/support-animated-vehicles.20115/"><h2>&gt;&gt;&gt; Support Thread Link &lt;&lt;&lt;</h2></a>
+    <a href="https://github.com/ebaydayz/Animated-Vehicles/commits/master"><h2>&gt;&gt;&gt; Change Log &lt;&lt;&lt;</h2></a>
+  </main>
+</body>
+</html>
